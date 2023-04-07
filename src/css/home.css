@@ -1,0 +1,12 @@
+body {
+    background: url('https://www.welcome-hotels.com/site/assets/files/45682/nurburg-6114976_1920.2560x1600.jpg') no-repeat center center fixed;
+    background-size: cover;
+  }
+
+  p {
+    background-color: yellow;
+  }
+
+  h5{
+    background-color: skyblue;
+  }
