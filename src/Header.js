@@ -27,14 +27,14 @@ function Header() {
   const [password, setPassword] = useState('')
   const [emailDirty, setEmailDirty] = useState(false)
   const [passwordDirty, setPasswordDirty] = useState(false)
-  const [emailError, setEmailError] = useState('Email не може бути порожнім')
-  const [passwordError, setPasswordError] = useState('Пароль не може бути порожнім')
+  const [emailError, setEmailError] = useState('Email can`t be empty')
+  const [passwordError, setPasswordError] = useState('Passowrd can`t be empty')
   const [formValid, setFormValid] = useState(false)
   const emailHandler = (e) => {
     setEmail(e.target.value)
     const re = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
     if (!re.test(String(e.target.value.toLowerCase()))) {
-      setEmailError('Некоректний email')
+      setEmailError('Error email')
     } else {
       setEmailError('')
     }
@@ -42,9 +42,9 @@ function Header() {
   const passwordHandler = (e) => {
     setPassword(e.target.value)
     if (e.target.value.length < 3 || e.target.length > 8) {
-      setPasswordError('Пароль повинен мати не менше 3 і не більше 8 символів')
+      setPasswordError('Password have to be at least 4 symbols and not bigger than 8')
       if (!e.target.value) {
-        setPasswordError('Пароль не може бути порожнім')
+        setPasswordError('Password can`t be empty')
       }
     } else {
       setPasswordError('')
