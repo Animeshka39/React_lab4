@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
-import CarouselBoxHk from "D:/React_lab6/src/CarouselBoxHk";
+import CarouselBoxHk from "D:/React_lab4/src/CarouselBoxHk";
 import {Button, Card, CardImg, Container} from "react-bootstrap";
-import 'D:/React_lab6/src/css/home.css';
+import 'D:/React_lab4/src/css/home.css';
 class Home extends Component {
     render() {
         return (
