@@ -27,14 +27,14 @@ function Header() {
   const [password, setPassword] = useState('')
   const [emailDirty, setEmailDirty] = useState(false)
   const [passwordDirty, setPasswordDirty] = useState(false)
-  const [emailError, setEmailError] = useState('Email can`t be empty')
-  const [passwordError, setPasswordError] = useState('Passowrd can`t be empty')
+  const [emailError, setEmailError] = useState('Email не може бути порожнім')
+  const [passwordError, setPasswordError] = useState('Пароль не може бути порожнім')
   const [formValid, setFormValid] = useState(false)
   const emailHandler = (e) => {
     setEmail(e.target.value)
     const re = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
     if (!re.test(String(e.target.value.toLowerCase()))) {
-      setEmailError('Error email')
+      setEmailError('Некоректний email')
     } else {
       setEmailError('')
     }
@@ -42,9 +42,9 @@ function Header() {
   const passwordHandler = (e) => {
     setPassword(e.target.value)
     if (e.target.value.length < 3 || e.target.length > 8) {
-      setPasswordError('Password have to be at least 4 symbols and not bigger than 8')
+      setPasswordError('Пароль повинен мати не менше 3 і не більше 8 символів')
       if (!e.target.value) {
-        setPasswordError('Password can`t be empty')
+        setPasswordError('Пароль не може бути порожнім')
       }
     } else {
       setPasswordError('')
@@ -62,14 +62,23 @@ function Header() {
     }
   }
 
-  useEffect ( () => {
+  useEffect(() => {
     if (emailError || passwordError) {
-        setFormValid(false)
+      setFormValid(false)
     } else {
-        setFormValid(true)
+      setFormValid(true)
     }
-},[emailError, passwordError])
+  }, [emailError, passwordError])
 
+  const [language, setLanguage] = useState('en');
+
+  function handleUaLanguage() {
+    setLanguage('ua');
+  }
+
+  function handleEnLanguage() {
+    setLanguage('en');
+  }
 
   return (
     <>
@@ -82,16 +91,30 @@ function Header() {
               width="30"
               className="d-inline-block align-top"
               alt="Logo"
-            /> Cars between us
+            /> React Site
           </Navbar.Brand>
           <Navbar.Toggle aria-controls="responsive-navbar-nav" />
           <Navbar.Collapse id="responsive-navbar-nav" style={{ justifyContent: 'space-between' }}>
-            <Nav>
-              <Nav.Link href="/"> Home </Nav.Link>
-              <Nav.Link href="/about"> About cars </Nav.Link>
-              <Nav.Link href="/contacts"> Contacts </Nav.Link>
-              <Nav.Link href="/blog"> Blog </Nav.Link>
+          <Nav>
+              {language === 'en' && (
+                <>
+                  <Nav.Link href="/"> Home </Nav.Link>
+                  <Nav.Link href="/about"> About us </Nav.Link>
+                  <Nav.Link href="/contacts"> Contacts </Nav.Link>
+                  <Nav.Link href="/blog"> Blog </Nav.Link>
+                </>
+              )}
+              {language === 'ua' && (
+                <>
+                  <Nav.Link href="/"> Головна </Nav.Link>
+                  <Nav.Link href="/about"> Про нас </Nav.Link>
+                  <Nav.Link href="/contacts"> Контакти </Nav.Link>
+                  <Nav.Link href="/blog"> Блог </Nav.Link>
+                </>
+              )}
             </Nav>
+            <a onClick={handleUaLanguage} style={{ cursor: 'pointer', color: language === 'ua' ? 'red' : 'green', textDecoration: 'underline' }}>ua</a>
+            <a onClick={handleEnLanguage} style={{ cursor: 'pointer', color: language === 'en' ? 'red' : 'green', textDecoration: 'underline' }}>en</a>
             <Form className="d-flex">
               <FormControl
                 type="text"
@@ -107,7 +130,7 @@ function Header() {
       <div style={{ marginTop: '50px' }}>
         <Router>
           <Routes>
-            <Route path="/" element={<Home />} />
+            <Route path="/" element={<Home language={language}/>} />
             <Route path="/about" element={<About />} />
             <Route path="/contacts" element={<Contacts />} />
             <Route path="/blog" element={<Blog />} />
@@ -138,15 +161,15 @@ function Header() {
 
             </Form.Group>
             <Form.Group controlId="fromBasicCheckbox">
-                <Form.Check type="checkbox" label="Remember me"/>
+              <Form.Check type="checkbox" label="Remember me" />
             </Form.Group>
 
             <Button disabled={!formValid} variant="primary" type="submit">
-                Submit
+              Submit
             </Button>
-        </Form>
-    </Modal.Body>
-</Modal>
+          </Form>
+        </Modal.Body>
+      </Modal>
 
 
     </>
