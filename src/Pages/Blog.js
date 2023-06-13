@@ -1,97 +1,126 @@
 import React, { Component } from 'react';
-import { Container, Col, Row, Card, ListGroup } from "react-bootstrap";
+import { Container, Col, Row, Card, ListGroup, Pagination } from "react-bootstrap";
+import StarRatings from './star-ratings';
 
 class Blog extends Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            posts: [
+                { id: 1, title: 'History of the AE86', content: ' The AE86 generation of the Toyota Corolla Levin and Toyota Sprinter Trueno is a small, lightweight coupe or hatchback introduced by Toyota in 1983 as part of the fifth generation Toyota Corolla lineup. ', date: new Date('2022-03-26') },
+                { id: 2, title: 'Blog post 2', content: 'Lorem', date: new Date('2022-03-27') },
+                { id: 3, title: 'Blog post 3', content: 'Lorem', date: new Date('2022-03-28') },
+                { id: 4, title: 'Blog post 4', content: 'Lorem', date: new Date('2022-04-01') },
+                { id: 5, title: 'Blog post 5', content: 'Lorem', date: new Date('2022-04-03') },
+                { id: 6, title: 'Blog post 6', content: 'Lorem', date: new Date('2022-04-02') },
+                { id: 7, title: 'Blog post 7', content: 'Lorem', date: new Date('2022-04-05') },
+                { id: 8, title: 'Blog post 8', content: 'Lorem', date: new Date('2022-04-06') },
+                { id: 9, title: 'Blog post 9', content: 'Lorem', date: new Date('2022-04-07') },
+                { id: 10, title: 'Blog post 10', content: 'Lorem', date: new Date('2022-04-08') },
+                { id: 11, title: 'Blog post 11', content: 'Lorem', date: new Date('2022-04-09') },
+                { id: 12, title: 'Blog post 12', content: 'Lorem', date: new Date('2022-04-11') },
+                { id: 13, title: 'Blog post 13', content: 'Lorem', date: new Date('2022-04-12') },
+                { id: 14, title: 'Blog post 14', content: 'Lorem', date: new Date('2022-04-15') },
+                { id: 15, title: 'Blog post 15', content: 'Lorem', date: new Date('2022-04-14') },
+                { id: 16, title: 'Blog post 16', content: 'Lorem', date: new Date('2022-04-16') },
+                { id: 17, title: 'Blog post 17', content: 'Lorem', date: new Date('2022-04-17') },
+                { id: 18, title: 'Blog post 18', content: 'Lorem', date: new Date('2022-04-19') },
+                { id: 19, title: 'Blog post 19', content: 'Lorem', date: new Date('2022-04-20') },
+                { id: 20, title: 'Blog post 20', content: 'Lorem', date: new Date('2022-04-22') }
+
+            ],
+            currentPage: 1,
+            itemsPerPage: 10,
+            ratings: {}
+        };
+        this.sortByDateAsc = this.sortByDateAsc.bind(this);
+        this.sortByDateDesc = this.sortByDateDesc.bind(this);
+        this.handlePageChange = this.handlePageChange.bind(this);
+        this.handleRatingClick = this.handleRatingClick.bind(this);
+    }
+
+    sortByDateAsc() {
+        const sortedPosts = [...this.state.posts].sort((a, b) => a.date - b.date);
+        this.setState({ posts: sortedPosts, isSortedAscending: true });
+    }
+
+    sortByDateDesc() {
+        const sortedPosts = [...this.state.posts].sort((a, b) => b.date - a.date);
+        this.setState({ posts: sortedPosts, isSortedAscending: false });
+    }
+
+    handlePageChange(pageNumber) {
+        this.setState({ currentPage: pageNumber });
+      }
+    handleRatingClick(postId, newRating) { 
+        this.setState(prevState => ({
+            ratings: {
+                ...prevState.ratings,
+                [postId]: newRating
+            }
+        }));
+    }
+
     render() {
+        const { posts, isSortedAscending, currentPage, itemsPerPage } = this.state;
+
+        const indexOfLastItem = currentPage * itemsPerPage;
+        const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+        const currentItems = posts.slice(indexOfFirstItem, indexOfLastItem);
+        
+        const totalPages = Math.ceil(posts.length / itemsPerPage);
+        const paginationLinks = [];
+        for (let i = 1; i <= totalPages; i++) {
+            paginationLinks.push(
+                <Pagination.Item
+                    key={i}
+                    active={i === currentPage}
+                    onClick={() => this.handlePageChange(i)}
+                >
+                    {i}
+                </Pagination.Item>
+            );
+        }
+        
         return (
             <Container>
                 <Row>
                     <Col md="9">
-                        <div className="d-flex align-items-center me-5">
-                            <div className="flex-shrink-0">
-                                <img
-                                    width={150}
-                                    height={150}
-                                    className="mr-3"
-                                    src="https://midnightroulette.files.wordpress.com/2012/06/f01.jpg"
-                                    alt="photo" />
+                    {currentItems.map(post => (
+                            <div key={post.id} className="d-flex align-items-center me-5">
+                                <div className="flex-shrink-0">
+                                    <img
+                                        width={150}
+                                        height={150}
+                                        className="mr-3"
+                                        src="https://emgotas.files.wordpress.com/2016/11/what-is-a-team.jpg"
+                                        alt="photo" />
+                                </div>
+                                <div className="flex-grow-1 ms-3">
+                                    <h5>{post.title}</h5>
+                                    <p>{post.content}</p>
+                                    <StarRatings
+                                        rating={this.state.ratings[post.id] || 0}
+                                        starRatedColor="#ffd700"
+                                        numberOfStars={5}
+                                        starDimension="24px"
+                                        starSpacing="4px"
+                                        changeRating={(newRating) => this.handleRatingClick(post.id, newRating)}
+                                    />
+                                    <p>{post.date.toLocaleDateString()}</p>
+
+                                </div>
                             </div>
-                            <div className="flex-grow-1 ms-3">
-                                <h5>History of the AE86</h5>
-                                <p>
-                                The AE86 generation of the Toyota Corolla Levin and Toyota Sprinter Trueno is a small, lightweight coupe or hatchback introduced by Toyota in 1983 as part of the fifth generation Toyota Corolla lineup. For the purpose of brevity, the insider-chassis code of “AE86” depicts the 1600 cc RWD model from the range. In classic Toyota code, the “A” represents the engine that came in the car (4A series), “E” represents the Corolla, “8” represents the fifth generation (E80 series) and “6” represents the variation within this generation.
-
-The Levin has fixed-headlights, and the Trueno has retractable headlights, but both can be hatchback or coupe. The export model name Corolla covers both variations. The AE86 (along with the lower spec 1,452 cubic centimetres (1.452 L) AE85 and 1587 cc SR5 versions) was rear wheel drive (unlike the front wheel drive CE80, EE80 and AE82 models), and is among the last rear-drive cars of its type, at a time when most passenger cars were being switched to front-drive. In 1987, there was a limited edition model of the AE86 called “Black Limited” that served as a send-off model before the AE86 chassis was replaced later that year by the front wheel drive AE92 Corolla/Sprinter range.
-
-The AE86 was also known as the “Hachi-Roku (ハチロク)”, Japanese for “eight-six”. Similarly the AE85 was commonly called “Hachi-Go (ハチゴー)”, meaning “eight-five”. The word “trueno” is Spanish for thunder, and “levin” is Middle English for “lightning”. In Japan, the Sprinter Trueno was exclusive to Toyota Japan dealerships called Toyota Vista Store,while the Corolla Levin was exclusive to Toyota Corolla Store.
-
-The AE86 later inspired the Toyota 86 (also badged as the GT86, FT86, Scion FR-S and Subaru BRZ).
-                                </p>
-                            </div>
-                        </div>
-
-                        <div className="d-flex align-items-center me-5">
-                            <div className="flex-shrink-0">
-                                <img
-                                    width={150}
-                                    height={150}
-                                    className="mr-3"
-                                    src="http://speedhunters-wp-production.s3.amazonaws.com/wp-content/uploads/2023/03/06000550/Toby_Thyer_Photographer-132-1200x800.jpg"
-                                    alt="photo" />
-                            </div>
-                            <div className="flex-grow-1 ms-3">
-                                <h5>30 Years Perfecting A Porsche 930 Turbo</h5>
-                                <p>
-                                The 930 Turbo is undoubtedly one of the most iconic and important cars in Porsche’s history. So how do you improve the perfect poster car?
-
-Well, Osamu Ebizuka has spent the past three decades building his ultimate version of the 911 that captured his heart as a teenager.
-
-
-During the late-1970s supercar boom, when Osamu-san was still in Japanese elementary school, Lamborghinis, Ferraris and Maseratis were taking over the world.
-
-But it was the Porsche 930 Turbo that captivated him, and the seed of inevitability was planted. Not surprising considering the success the ‘Moby Dick’ 935 was enjoying on race tracks at the time.
-
-When Osamu-san was finally old enough to drive, there was no chance he was getting behind the wheel of a Porsche, or any other supercar of the time. So he settled for the next best thing – Japanese domestic bliss.
-
-Today, there are a number of JDM classics that can rival and exceed the desirability and price tag of a Porsche 930 Turbo. Back in the day, however, the cars that Osamu-san drove were still attainable fun for Japan’s younger generations. A new S30 Nissan Fairlady Z cost around the equivalent of US$27,000 in today’s money, compared to US$127,000 for a 930 Turbo.
-
-                                </p>
-                            </div>
-                        </div>
-
-                        <div className="d-flex align-items-center me-5">
-                            <div className="flex-shrink-0">
-                                <img
-                                    width={150}
-                                    height={150}
-                                    className="mr-3"
-                                    src="http://speedhunters-wp-production.s3.amazonaws.com/wp-content/uploads/2023/03/19130008/motorama-toronto-2023-dave-thomas-speed-hunters-2-6-1200x800.jpg"
-                                    alt="photo" />
-                            </div>
-                            <div className="flex-grow-1 ms-3">
-                                <h5>Taking It Back To The ’80s & ’90s At Motoramat</h5>
-                                <p>
-                                One of the podcasts I listen to religiously is called Southern Vangard Radio. A hip-hop-centric broadcast, ‘Vangard features three, six-to-eight song mixes separated by talk breaks.
-
-During one of talk breaks about 15 episodes back, the two hosts lamented missing their life from the 1990s. I found the segment both hilarious and relatable. I was pretty young throughout the ’90s, so truthfully I don’t miss all of my life from then. But I do miss how much cooler the cars were.
-
-The summertime Friday night street orchestra was a mix of Flowmaster-equipped Fox Body Mustangs and Hondas with AEM cold air intakes that sounded immense when VTEC kicked in.
-
-Every third Acura DC Integra seemed to have an ultra-rare JDM front end swap, and the latest club hits could be heard clearly through the T-tops of many third-generation Camaros.
-
-Any right-hand drive car that rolled up to Tim Hortons – Canadian doughnut shops that were the local hang-out spots in the ’90s through to the early-’00s – was instantly mobbed by onlookers.
-
-Air suspension? Well, that was mostly just sorcery for those guys running around with murals on their tailgates and their J-body friends.
-
-Thankfully, cars from the ’90s are starting to receive proper classic treatment. The respect that was given vehicles from the ’60s and ’70s in the 1990s is being paid forward. It’s now not at all uncommon to see ’90s cars being torn down to their foundations and built back up as either restorations or restomods.
-
-
-                                </p>
-                            </div>
-                        </div>
+                        ))}
                     </Col>
                     <Col md="3">
                         <h5 className="text-center mt-5">Categories</h5>
+                        <button className={isSortedAscending ? 'btn btn-primary' : 'btn'} onClick={this.sortByDateAsc}>
+                            Date ↑
+                        </button>
+                        <button className={!isSortedAscending ? 'btn btn-primary' : 'btn'} onClick={this.sortByDateDesc}>
+                            Date ↓
+                        </button>
                         <Card>
                             <ListGroup variant="flush">
                                 <ListGroup.Item>JDM</ListGroup.Item>
@@ -101,6 +130,7 @@ Thankfully, cars from the ’90s are starting to receive proper classic treatmen
                                 <ListGroup.Item>Performance Cars</ListGroup.Item>
                             </ListGroup>
                         </Card>
+                        <Pagination>{paginationLinks}</Pagination>
                     </Col >
                     <Card className="mt-3 bg-light">
                         <Card.Body>
@@ -111,7 +141,7 @@ Thankfully, cars from the ’90s are starting to receive proper classic treatmen
                         </Card.Body>
                     </Card>
                 </Row>
-            </Container>
+            </Container>       
         );
     }
 }
