@@ -1,11 +1,10 @@
 import React, { Component } from 'react';
-import CarouselBoxHk from "D:/React_lab4/src/CarouselBoxHk";
 import {Button, Card, CardImg, Container} from "react-bootstrap";
 import 'D:/React_lab4/src/css/home.css';
 class Home extends Component {
     render() {
         return (
-            <CarouselBoxHk/>,
+          
             <Container>
                 <h2 className="text-center m-4">{this.props.language === 'en' ? 'TOP-3 AUTOSPORT' : 'ТОП-3 Автоспорт'}</h2>
                 <div className="row">
