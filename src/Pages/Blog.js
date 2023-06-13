@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
-import { Container, Col, Row, Card, ListGroup, Pagination } from "react-bootstrap";
+import { Container, Col, Row, Card, ListGroup, Pagination, Modal, Form, Button } from 'react-bootstrap';
+import { db, getTestDoc, addTestData } from "../firebaseConfig"
 import StarRatings from './star-ratings';
 
 class Blog extends Component {
@@ -7,36 +8,48 @@ class Blog extends Component {
         super(props);
         this.state = {
             posts: [
-                { id: 1, title: 'History of the AE86', content: ' The AE86 generation of the Toyota Corolla Levin and Toyota Sprinter Trueno is a small, lightweight coupe or hatchback introduced by Toyota in 1983 as part of the fifth generation Toyota Corolla lineup. ', date: new Date('2022-03-26') },
-                { id: 2, title: 'Blog post 2', content: 'Lorem', date: new Date('2022-03-27') },
-                { id: 3, title: 'Blog post 3', content: 'Lorem', date: new Date('2022-03-28') },
-                { id: 4, title: 'Blog post 4', content: 'Lorem', date: new Date('2022-04-01') },
-                { id: 5, title: 'Blog post 5', content: 'Lorem', date: new Date('2022-04-03') },
-                { id: 6, title: 'Blog post 6', content: 'Lorem', date: new Date('2022-04-02') },
-                { id: 7, title: 'Blog post 7', content: 'Lorem', date: new Date('2022-04-05') },
-                { id: 8, title: 'Blog post 8', content: 'Lorem', date: new Date('2022-04-06') },
-                { id: 9, title: 'Blog post 9', content: 'Lorem', date: new Date('2022-04-07') },
-                { id: 10, title: 'Blog post 10', content: 'Lorem', date: new Date('2022-04-08') },
-                { id: 11, title: 'Blog post 11', content: 'Lorem', date: new Date('2022-04-09') },
-                { id: 12, title: 'Blog post 12', content: 'Lorem', date: new Date('2022-04-11') },
-                { id: 13, title: 'Blog post 13', content: 'Lorem', date: new Date('2022-04-12') },
-                { id: 14, title: 'Blog post 14', content: 'Lorem', date: new Date('2022-04-15') },
-                { id: 15, title: 'Blog post 15', content: 'Lorem', date: new Date('2022-04-14') },
-                { id: 16, title: 'Blog post 16', content: 'Lorem', date: new Date('2022-04-16') },
-                { id: 17, title: 'Blog post 17', content: 'Lorem', date: new Date('2022-04-17') },
-                { id: 18, title: 'Blog post 18', content: 'Lorem', date: new Date('2022-04-19') },
-                { id: 19, title: 'Blog post 19', content: 'Lorem', date: new Date('2022-04-20') },
-                { id: 20, title: 'Blog post 20', content: 'Lorem', date: new Date('2022-04-22') }
+                { id: 1, category: 'JDM', title: 'History of the AE86', content: ' The AE86 generation of the Toyota Corolla Levin and Toyota Sprinter Trueno is a small, lightweight coupe or hatchback introduced by Toyota in 1983 as part of the fifth generation Toyota Corolla lineup. ', date: new Date('2022-03-26') },
+                { id: 2, category: 'Stance', title: 'Blog post 2', content: 'Lorem', date: new Date('2022-03-27') },
+                { id: 3, category: 'Bosozoku', title: 'Blog post 3', content: 'Lorem', date: new Date('2022-03-28') },
+                { id: 4, category: 'Race Cars', title: 'Blog post 4', content: 'Lorem', date: new Date('2022-04-01') },
+                { id: 5, category: 'Performance Cars', title: 'Blog post 5', content: 'Lorem', date: new Date('2022-04-03') },
+                { id: 6, category: 'JDM', title: 'Blog post 6', content: 'Lorem', date: new Date('2022-04-02') },
+                { id: 7, category: 'Performance Cars', title: 'Blog post 7', content: 'Lorem', date: new Date('2022-04-05') },
+                { id: 8, category: 'JDM', title: 'Blog post 8', content: 'Lorem', date: new Date('2022-04-06') },
+                { id: 9, category: 'Stance', title: 'Blog post 9', content: 'Lorem', date: new Date('2022-04-07') },
+                { id: 10, category: 'Performance Cars', title: 'Blog post 10', content: 'Lorem', date: new Date('2022-04-08') },
+                { id: 11, category: 'Bosozoku', title: 'Blog post 11', content: 'Lorem', date: new Date('2022-04-09') },
+                { id: 12, category: 'JDM', title: 'Blog post 12', content: 'Lorem', date: new Date('2022-04-11') },
+                { id: 13, category: 'Bosozoku', title: 'Blog post 13', content: 'Lorem', date: new Date('2022-04-12') },
+                { id: 14, category: 'Performance Cars', title: 'Blog post 14', content: 'Lorem', date: new Date('2022-04-15') },
+                { id: 15, category: 'Bosozoku', title: 'Blog post 15', content: 'Lorem', date: new Date('2022-04-14') },
+                { id: 16, category: 'Performance Cars', title: 'Blog post 16', content: 'Lorem', date: new Date('2022-04-16') },
+                { id: 17, category: 'Bosozoku', title: 'Blog post 17', content: 'Lorem', date: new Date('2022-04-17') },
+                { id: 18, category: 'Stance', title: 'Blog post 18', content: 'Lorem', date: new Date('2022-04-19') },
+                { id: 19, category: 'JDM', title: 'Blog post 19', content: 'Lorem', date: new Date('2022-04-20') },
+                { id: 20, category: 'Bosozoku', title: 'Blog post 20', content: 'Lorem', date: new Date('2022-04-22') }
 
             ],
             currentPage: 1,
             itemsPerPage: 10,
-            ratings: {}
+            ratings: {},
+            showModal: false,
+            showCommentModal: false,
+            commentTitle: '',
+            commentContent: '',
+            comment: '',
         };
         this.sortByDateAsc = this.sortByDateAsc.bind(this);
         this.sortByDateDesc = this.sortByDateDesc.bind(this);
         this.handlePageChange = this.handlePageChange.bind(this);
         this.handleRatingClick = this.handleRatingClick.bind(this);
+        this.filterByCategory = this.filterByCategory.bind(this);
+        this.openModal = this.openModal.bind(this);
+        this.closeModal = this.closeModal.bind(this);
+        this.closeCommentModal = this.closeCommentModal.bind(this);
+        this.handleCommentTitleChange = this.handleCommentTitleChange.bind(this);
+        this.handleCommentContentChange = this.handleCommentContentChange.bind(this);
+        this.submitComment = this.submitComment.bind(this);
     }
 
     sortByDateAsc() {
@@ -61,9 +74,49 @@ class Blog extends Component {
         }));
     }
 
-    render() {
-        const { posts, isSortedAscending, currentPage, itemsPerPage } = this.state;
+    filterByCategory(category) {
+        const filteredPosts = this.state.posts.filter((post) => post.category === category);
+        this.setState({ posts: filteredPosts, isSortedAscending: false });
+    }
 
+    openModal(postId) {
+        this.setState({ showModal: true, selectedPostId: postId });
+    }
+
+    closeModal() {
+        this.setState({ showModal: false });
+    }
+    openCommentModal(postId) {
+        getTestDoc(db).then(testData => {
+            this.setState({ comment: testData[postId] });
+           
+            console.log(this.comment);
+        });
+        this.setState({ showCommentModal: true, selectedPostId: postId });
+    }
+    closeCommentModal() {
+        this.setState({ showCommentModal: false });
+    }
+    handleCommentTitleChange(event) {
+        this.setState({ commentTitle: event.target.value });
+    }
+
+    handleCommentContentChange(event) {
+        this.setState({ commentContent: event.target.value });
+    }
+
+    submitComment() {
+        const { commentTitle, commentContent, selectedPostId } = this.state;
+        const postId = selectedPostId;
+        const comment = 'Заголовок: ' + commentTitle + ', Коментар: ' + commentContent + ', data: ' + new Date().toLocaleDateString();
+        console.log(`Пост: ${postId} ` + comment);
+
+        const updatedData = { [postId]: comment };
+        addTestData(db, updatedData);
+        this.closeModal();
+    }
+    render() {
+        const { posts, isSortedAscending, currentPage, itemsPerPage, comment, showModal, showCommentModal, commentTitle, commentContent } = this.state;
         const indexOfLastItem = currentPage * itemsPerPage;
         const indexOfFirstItem = indexOfLastItem - itemsPerPage;
         const currentItems = posts.slice(indexOfFirstItem, indexOfLastItem);
@@ -93,10 +146,15 @@ class Blog extends Component {
                                         width={150}
                                         height={150}
                                         className="mr-3"
-                                        src="https://emgotas.files.wordpress.com/2016/11/what-is-a-team.jpg"
+                                        src="https://cdn.jdpower.com/What%20Is%20A%20JDM%20Car.jpg"
                                         alt="photo" />
                                 </div>
                                 <div className="flex-grow-1 ms-3">
+                                    <a
+                                        onClick={() => this.filterByCategory(post.category)}
+                                        style={{ cursor: 'pointer', color: 'blue', textDecoration: 'underline' }}>
+                                        {post.category}
+                                    </a>
                                     <h5>{post.title}</h5>
                                     <p>{post.content}</p>
                                     <StarRatings
@@ -108,7 +166,8 @@ class Blog extends Component {
                                         changeRating={(newRating) => this.handleRatingClick(post.id, newRating)}
                                     />
                                     <p>{post.date.toLocaleDateString()}</p>
-
+                                    <Button onClick={() => this.openModal(post.id)}>Коментувати</Button>
+                                    <Button style={{ marginLeft: '10px' }} onClick={() => this.openCommentModal(post.id)}>Переглянути коментарі</Button>
                                 </div>
                             </div>
                         ))}
@@ -141,6 +200,44 @@ class Blog extends Component {
                         </Card.Body>
                     </Card>
                 </Row>
+                <Modal show={showModal} onHide={this.closeModal}>
+                    <Modal.Header closeButton>
+                        <Modal.Title>Додати коментар</Modal.Title>
+                    </Modal.Header>
+                    <Modal.Body>
+                        <Form>
+                            <Form.Group controlId="commentTitle">
+                                <Form.Label>Заголовок</Form.Label>
+                                <Form.Control type="text" value={commentTitle} onChange={this.handleCommentTitleChange} />
+                            </Form.Group>
+                            <Form.Group controlId="commentContent">
+                                <Form.Label>Коментар</Form.Label>
+                                <Form.Control as="textarea" rows={3} value={commentContent} onChange={this.handleCommentContentChange} />
+                            </Form.Group>
+                        </Form>
+                    </Modal.Body>
+                    <Modal.Footer>
+                        <Button variant="secondary" onClick={this.closeModal}>
+                            Закрити
+                        </Button>
+                        <Button variant="primary" onClick={this.submitComment}>
+                            Підтвердити
+                        </Button>
+                    </Modal.Footer>
+                </Modal>
+                <Modal show={showCommentModal} onHide={this.closeCommentModal}>
+                    <Modal.Header closeButton>
+                        <Modal.Title></Modal.Title>
+                    </Modal.Header>
+                    <Modal.Body>
+                        <div>{comment}</div>
+                    </Modal.Body>
+                    <Modal.Footer>
+                        <Button variant="secondary" onClick={this.closeCommentModal}>
+                            Закрити
+                        </Button>
+                    </Modal.Footer>
+                </Modal>
             </Container>       
         );
     }
